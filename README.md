@@ -27,10 +27,7 @@
 - **User Permissions**: Sufficient permissions in Dynamics 365 CRM to update records in bulk.
 
 ## Contributing
-Contributions are welcome! Feel free to fork the repository and submit pull requests.
-
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+Contributions are welcome! Feel free to fork the repository and submit pull 
 
 ## Support
 For any issues or feedback, please create an issue on the [GitHub repository](https://github.com/NareshD365/Dynamics365).
