@@ -8,11 +8,11 @@ namespace BypassLogicAttributeUpdater
     // To generate Base64 string for Images below, you can use https://www.base64-image.de/
     [Export(typeof(IXrmToolBoxPlugin)),
         ExportMetadata("Name", "Bypass Logic Column Updater"),
-        ExportMetadata("Description", "Updates columns by bypassing plugins and flows "),
+        ExportMetadata("Description", "Updates columns by bypassing plugins and flows"),
         // Please specify the base64 content of a 32x32 pixels image
-        ExportMetadata("SmallImageBase64", null),
+        ExportMetadata("SmallImageBase64", "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAhpJREFUWEft1z2MTFEUB/Df3UZofERDQaIgRKIRgkRsodUpRSPR+I6I6DQ+KsRHwlYaohESNGQtGoVKJESj0FtZkSDhenfeHfvszsczWTtbzE0m8ybv3HP/53/O+d8zQZ9X6PP5BgDmHgORDTiIVfxTir7jJS4FxuvW1h8GIkPYjZuYV9dBC7s32BX4UMdHFcBKPMEKXMVD/KzjJNsswilsxEhgf529VQBbMYbXGA58qeOgahNZg3cYDyyps78KYAeeFoc/C6RnkXU4kVlpVbCJoRe4EJiIZc38SltDmdKuqxWAscBwZDlGlVF1WxcDRzPomL5DzQLuBGBbTslbpfNW9bAg18pEYOFMA2impMFIOwpiI1OTEU/93Y26TgwMAAwY6DsDzTZMynakH22YhCgp4+purZSV8FgrHYgsw3ncC9yd6qttG2Zna7MUp4uqnRQ/zwAad0cspTjZDgViZFMO5Bv2Bh5UQXQEUCPyaSaRT8VMsDhJeOB9ZD7O4VDxSe8OBG43N/4PADewD69wpqifz5mRs9icQewJPMoKWmKJbM9UjQZ29hJ99pMmqftY38HHx1DOHZN5rRTLnVAOIz2vWKYgUb6lMl0lQEuLoeUHLgeO/wWg59NqbIzlqHctA7iCk4GvswIgDzVp0krX9fViWjqcumNaEdYIpCeTSGrlx4We3CpSfroZ+awB6IZ67v0x6YZ4pt/3nYHfYOnCIbfYaPEAAAAASUVORK5CYII="),
         // Please specify the base64 content of a 80x80 pixels image
-        ExportMetadata("BigImageBase64", null),
+        ExportMetadata("BigImageBase64", "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"),
         ExportMetadata("BackgroundColor", "Lavender"),
         ExportMetadata("PrimaryFontColor", "Black"),
         ExportMetadata("SecondaryFontColor", "Gray")]
@@ -22,58 +22,5 @@ namespace BypassLogicAttributeUpdater
         {
             return new BypassLogicAttributeUpdaterPluginControl();
         }
-
-        /// <summary>
-        /// Constructor 
-        /// </summary>
-        //public BypassLogicAttributeUpdaterPlugin()
-        //{
-        //    // If you have external assemblies that you need to load, uncomment the following to 
-        //    // hook into the event that will fire when an Assembly fails to resolve
-        //    // AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolveEventHandler);
-        //}
-
-        /// <summary>
-        /// Event fired by CLR when an assembly reference fails to load
-        /// Assumes that related assemblies will be loaded from a subfolder named the same as the Plugin
-        /// For example, a folder named Sample.XrmToolBox.MyPlugin 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        //private Assembly AssemblyResolveEventHandler(object sender, ResolveEventArgs args)
-        //{
-        //    Assembly loadAssembly = null;
-        //    Assembly currAssembly = Assembly.GetExecutingAssembly();
-
-        //    // base name of the assembly that failed to resolve
-        //    var argName = args.Name.Substring(0, args.Name.IndexOf(","));
-
-        //    // check to see if the failing assembly is one that we reference.
-        //    List<AssemblyName> refAssemblies = currAssembly.GetReferencedAssemblies().ToList();
-        //    var refAssembly = refAssemblies.Where(a => a.Name == argName).FirstOrDefault();
-
-        //    // if the current unresolved assembly is referenced by our plugin, attempt to load
-        //    if (refAssembly != null)
-        //    {
-        //        // load from the path to this plugin assembly, not host executable
-        //        string dir = Path.GetDirectoryName(currAssembly.Location).ToLower();
-        //        string folder = Path.GetFileNameWithoutExtension(currAssembly.Location);
-        //        dir = Path.Combine(dir, folder);
-
-        //        var assmbPath = Path.Combine(dir, $"{argName}.dll");
-
-        //        if (File.Exists(assmbPath))
-        //        {
-        //            loadAssembly = Assembly.LoadFrom(assmbPath);
-        //        }
-        //        else
-        //        {
-        //            throw new FileNotFoundException($"Unable to locate dependency: {assmbPath}");
-        //        }
-        //    }
-
-        //    return loadAssembly;
-        //}
     }
 }

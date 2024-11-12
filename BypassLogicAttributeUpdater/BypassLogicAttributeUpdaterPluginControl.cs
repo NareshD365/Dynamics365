@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 using Microsoft.Xrm.Sdk.Messages;
+using McTools.Xrm.Connection.WinForms.UserControls;
+using McTools.Xrm.Connection.WinForms;
+using Microsoft.Xrm.Tooling.CrmConnectControl;
 
 namespace BypassLogicAttributeUpdater
 {
@@ -57,40 +60,6 @@ namespace BypassLogicAttributeUpdater
             CloseTool();
         }
 
-        private void tsbSample_Click(object sender, EventArgs e)
-        {
-            // The ExecuteMethod method handles connecting to an
-            // organization if XrmToolBox is not yet connected
-            ExecuteMethod(GetAccounts);
-        }
-
-        private void GetAccounts()
-        {
-            WorkAsync(new WorkAsyncInfo
-            {
-                Message = "Getting accounts",
-                Work = (worker, args) =>
-                {
-                    args.Result = Service.RetrieveMultiple(new QueryExpression("account")
-                    {
-                        TopCount = 50
-                    });
-                },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    var result = args.Result as EntityCollection;
-                    if (result != null)
-                    {
-                        MessageBox.Show($"Found {result.Entities.Count} accounts");
-                    }
-                }
-            });
-        }
-
         /// <summary>
         /// This event occurs when the plugin is closed
         /// </summary>
@@ -114,21 +83,27 @@ namespace BypassLogicAttributeUpdater
                 mySettings.LastUsedOrganizationWebappUrl = detail.WebApplicationUrl;
                 LogInfo("Connection has changed to: {0}", detail.WebApplicationUrl);
             }
-        }
-
+        }        
         private void loadEntitiesBtn_Click(object sender, EventArgs e)
         {
-            // Initialize and configure BackgroundWorker
-            entityLoaderWorker = new BackgroundWorker();
-            entityLoaderWorker.DoWork += EntityLoaderWorker_DoWork;
-            entityLoaderWorker.RunWorkerCompleted += EntityLoaderWorker_RunWorkerCompleted;
-            entityLoaderWorker.WorkerSupportsCancellation = true;
+            ExecuteMethod(loadEntities);
+        }
+        private void loadEntities()
+        {
+            if (Service != null)
+            {
+                // Initialize and configure BackgroundWorker
+                entityLoaderWorker = new BackgroundWorker();
+                entityLoaderWorker.DoWork += EntityLoaderWorker_DoWork;
+                entityLoaderWorker.RunWorkerCompleted += EntityLoaderWorker_RunWorkerCompleted;
+                entityLoaderWorker.WorkerSupportsCancellation = true;
 
-            // Disable button to prevent multiple clicks
-            loadEntitiesBtn.Enabled = false;
+                // Disable button to prevent multiple clicks
+                loadEntitiesBtn.Enabled = false;
 
-            // Start the background worker
-            entityLoaderWorker.RunWorkerAsync();
+                // Start the background worker
+                entityLoaderWorker.RunWorkerAsync();
+            }
         }
 
         private void EntityLoaderWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -190,6 +165,11 @@ namespace BypassLogicAttributeUpdater
 
         private void listViewTables_SelectedIndexChanged(object sender, EventArgs e)
         {
+            ExecuteMethod(onTableSelection);
+        }
+
+        private void onTableSelection()
+        {
             // Ensure a single item is selected
             if (listViewTables.SelectedItems.Count == 1)
             {
@@ -199,17 +179,19 @@ namespace BypassLogicAttributeUpdater
                 var entity = listViewTables.SelectedItems[0].SubItems[1];
                 schemaName = entity.Text;
 
-                // Initialize and configure BackgroundWorker for attribute loading
-                attributeLoaderWorker = new BackgroundWorker();
-                attributeLoaderWorker.DoWork += AttributeLoaderWorker_DoWork;
-                attributeLoaderWorker.RunWorkerCompleted += AttributeLoaderWorker_RunWorkerCompleted;
-                attributeLoaderWorker.WorkerSupportsCancellation = true;
+                if (Service != null)
+                {
+                    // Initialize and configure BackgroundWorker for attribute loading
+                    attributeLoaderWorker = new BackgroundWorker();
+                    attributeLoaderWorker.DoWork += AttributeLoaderWorker_DoWork;
+                    attributeLoaderWorker.RunWorkerCompleted += AttributeLoaderWorker_RunWorkerCompleted;
+                    attributeLoaderWorker.WorkerSupportsCancellation = true;
 
-                // Pass the schema name as an argument to RunWorkerAsync
-                attributeLoaderWorker.RunWorkerAsync(schemaName);
+                    // Pass the schema name as an argument to RunWorkerAsync
+                    attributeLoaderWorker.RunWorkerAsync(schemaName);
+                }
             }
         }
-
         private void AttributeLoaderWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             // Retrieve the schema name from the argument
@@ -218,7 +200,7 @@ namespace BypassLogicAttributeUpdater
             // Retrieve attributes for the selected entity in the background
             RetrievalService retrievalService = new RetrievalService(Service);
             attributesMetadata = retrievalService.RetrieveAllAttributes(schemaName);
-            
+
             // Pass the attributes as the result to RunWorkerCompleted
             e.Result = attributesMetadata;
         }
@@ -319,32 +301,40 @@ namespace BypassLogicAttributeUpdater
 
         private void updateBtn_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(schemaName))
-            {
-                MessageBox.Show("Please select an entity first.");
-                return;
-            }
+            ExecuteMethod(onUpdateBtn);
+        }
 
-            // Retrieve columns and filter XML before starting the background work
-            string[] columns = GetCheckedAttributeNames();
-            string filterXML = filterXmlBox.Text;
-
-            if(columns.Length > 0)
+        private void onUpdateBtn()
+        {
+            if (Service != null)
             {
-                // Initialize and configure BackgroundWorker
-                BackgroundWorker updateWorker = new BackgroundWorker();
-                updateWorker.DoWork += UpdateWorker_DoWork;
-                updateWorker.RunWorkerCompleted += UpdateWorker_RunWorkerCompleted;
-                updateWorker.WorkerSupportsCancellation = true;
+                if (string.IsNullOrEmpty(schemaName))
+                {
+                    MessageBox.Show("Please select an entity first.");
+                    return;
+                }
 
-                // Prepare arguments to pass into DoWork
-                var args = new Tuple<string, string[], string>(schemaName, columns, filterXML);
-                updateWorker.RunWorkerAsync(args); // Start the background worker
-            }
-            else
-            {
-                MessageBox.Show("Please select columns to Update");
-                return;
+                // Retrieve columns and filter XML before starting the background work
+                string[] columns = GetCheckedAttributeNames();
+                string filterXML = filterXmlBox.Text;
+
+                if (columns.Length > 0)
+                {
+                    // Initialize and configure BackgroundWorker
+                    BackgroundWorker updateWorker = new BackgroundWorker();
+                    updateWorker.DoWork += UpdateWorker_DoWork;
+                    updateWorker.RunWorkerCompleted += UpdateWorker_RunWorkerCompleted;
+                    updateWorker.WorkerSupportsCancellation = true;
+
+                    // Prepare arguments to pass into DoWork
+                    var args = new Tuple<string, string[], string>(schemaName, columns, filterXML);
+                    updateWorker.RunWorkerAsync(args); // Start the background worker
+                }
+                else
+                {
+                    MessageBox.Show("Please select columns to Update");
+                    return;
+                }
             }
         }
 
@@ -562,26 +552,34 @@ namespace BypassLogicAttributeUpdater
 
         private void bypassSelectionBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(schemaName))
+            ExecuteMethod(onBypassSelection);                    
+        }
+
+        private void onBypassSelection()
+        {
+            if (Service != null)
             {
-                MessageBox.Show("Please select an entity first.");
-                return;
-            }
+                if (string.IsNullOrEmpty(schemaName))
+                {
+                    MessageBox.Show("Please select an entity first.");
+                    return;
+                }
 
-            //bypassSelectionBox.Visible = true;
-            if (bypassSelectionBox.SelectedItems.Count == 1)
-            {
-                isBypassSelected = true;
-                itemText = bypassSelectionBox.SelectedItems[0].ToString();
+                //bypassSelectionBox.Visible = true;
+                if (bypassSelectionBox.SelectedItems.Count == 1)
+                {
+                    isBypassSelected = true;
+                    itemText = bypassSelectionBox.SelectedItems[0].ToString();
 
-                // Initialize BackgroundWorker
-                BackgroundWorker bypassWorker = new BackgroundWorker();
-                bypassWorker.DoWork += BypassWorker_DoWork;
-                bypassWorker.RunWorkerCompleted += BypassWorker_RunWorkerCompleted;
-                bypassWorker.WorkerSupportsCancellation = true;
+                    // Initialize BackgroundWorker
+                    BackgroundWorker bypassWorker = new BackgroundWorker();
+                    bypassWorker.DoWork += BypassWorker_DoWork;
+                    bypassWorker.RunWorkerCompleted += BypassWorker_RunWorkerCompleted;
+                    bypassWorker.WorkerSupportsCancellation = true;
 
-                // Pass itemText to DoWork
-                bypassWorker.RunWorkerAsync(itemText); // Start the background worker
+                    // Pass itemText to DoWork
+                    bypassWorker.RunWorkerAsync(itemText); // Start the background worker
+                }
             }
         }
 
