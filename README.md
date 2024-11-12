@@ -26,6 +26,10 @@
 - **XrmToolBox**: Ensure you have the latest version installed.
 - **User Permissions**: Sufficient permissions in Dynamics 365 CRM to update records in bulk.
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ## Contributing
 Contributions are welcome! Feel free to fork the repository and submit pull 
 
